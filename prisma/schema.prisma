@@ -1,18 +1,11 @@
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "../generated/prisma"
-// }
-
-// generator client {
-//   provider = "prisma-client-js"  // or "prisma-client"
-//   output   = "../node_modules/.prisma/client"
-// }
-
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
+// generator client {
+//   provider = "prisma-client-js"  // Keep this
+//   output   = "../node_modules/.prisma/client"
+// }
 datasource db {
   provider = "mysql"
 }

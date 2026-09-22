@@ -1,0 +1,594 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model ci_admin {
+  admin_id            Int      @id @default(autoincrement())
+  admin_role_id       Int
+  username            String   @db.VarChar(100)
+  firstname           String   @db.VarChar(255)
+  lastname            String   @db.VarChar(255)
+  email               String   @db.VarChar(255)
+  mobile_no           String   @db.VarChar(255)
+  image               String   @db.VarChar(300)
+  password            String   @db.VarChar(255)
+  last_login          DateTime @db.DateTime(0)
+  is_verify           Int      @default(1) @db.TinyInt
+  is_admin            Int      @default(1) @db.TinyInt
+  is_active           Int      @default(0) @db.TinyInt
+  is_supper           Int      @default(0) @db.TinyInt
+  token               String   @db.VarChar(255)
+  password_reset_code String   @db.VarChar(255)
+  last_ip             String   @db.VarChar(255)
+  created_at          DateTime @db.DateTime(0)
+  updated_at          DateTime @db.DateTime(0)
+
+  created_settings ci_settings[] @relation("settings_created_by")
+  updated_settings ci_settings[] @relation("settings_updated_by")
+}
+
+model ci_admin_roles {
+  admin_role_id          Int      @id @default(autoincrement())
+  admin_role_title       String   @db.VarChar(30)
+  admin_role_status      Int
+  admin_role_created_by  Int
+  admin_role_created_on  DateTime @db.DateTime(0)
+  admin_role_modified_by Int
+  admin_role_modified_on DateTime @db.DateTime(0)
+}
+
+model ci_email_templates {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  slug        String   @db.VarChar(100)
+  subject     String   @db.VarChar(255)
+  body        String   @db.Text
+  last_update DateTime @default(now()) @db.DateTime(0)
+}
+
+model ci_general_settings {
+  id                   Int       @id @default(autoincrement())
+  favicon              String?   @db.VarChar(255)
+  logo                 String?   @db.VarChar(255)
+  application_name     String?   @db.VarChar(255)
+  timezone             String?   @db.VarChar(255)
+  currency             String?   @db.VarChar(100)
+  default_language     Int
+  copyright            String?   @db.TinyText
+  email_from           String    @db.VarChar(100)
+  smtp_host            String?   @db.VarChar(255)
+  smtp_port            Int?
+  smtp_user            String?   @db.VarChar(50)
+  smtp_pass            String?   @db.VarChar(50)
+  facebook_link        String?   @db.VarChar(255)
+  twitter_link         String?   @db.VarChar(255)
+  google_link          String?   @db.VarChar(255)
+  youtube_link         String?   @db.VarChar(255)
+  linkedin_link        String?   @db.VarChar(255)
+  instagram_link       String?   @db.VarChar(255)
+  recaptcha_secret_key String?   @db.VarChar(255)
+  recaptcha_site_key   String?   @db.VarChar(255)
+  recaptcha_lang       String?   @db.VarChar(50)
+  created_date         DateTime? @db.DateTime(0)
+  updated_date         DateTime? @db.DateTime(0)
+}
+
+model ci_language {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(225)
+  short_name String   @db.VarChar(15)
+  status     Int      @default(1)
+  created_at DateTime @default(now()) @db.DateTime(0)
+}
+
+model dg_pics {
+  pics_id        Int      @id @default(autoincrement())
+  picid          Int      @default(0)
+  CDNumber       String   @default("") @db.VarChar(15)
+  AssetName      String   @default("") @db.VarChar(255)
+  ShotOn         DateTime @db.Date
+  Notes          String   @default("") @db.VarChar(1500)
+  ImageHeight    Decimal? @default(0.00) @db.Decimal(7, 2)
+  ImageWidth     Decimal? @default(0.00) @db.Decimal(7, 2)
+  displaystatus  Boolean  @default(false)
+  displayorder   Boolean  @default(false)
+  insertdate     DateTime @db.Timestamp(0)
+  updatedate     DateTime @db.Timestamp(0)
+  recordname     String   @default("") @db.VarChar(150)
+  HomeStatus     Boolean  @default(false)
+  searchnotes    String   @default("") @db.VarChar(4500)
+  ImagePrice     Int      @default(0)
+  isMigrat       Boolean  @default(false)
+  newFilePath    String   @default("") @db.VarChar(100)
+  filExt         String   @default("") @db.VarChar(5)
+  newFileName    String   @default("") @db.VarChar(255)
+  picsSections   Boolean  @default(false)
+  dgPicsKeywords String   @default("") @db.VarChar(1000)
+  isDone         Int?     @default(0) @db.SmallInt
+  photo_credit   String   @db.VarChar(255)
+}
+
+model module_access_old {
+  id            Int    @id @default(autoincrement())
+  admin_role_id Int
+  module        String @db.VarChar(255)
+  operation     String @db.VarChar(255)
+
+  @@index([admin_role_id], map: "RoleId")
+}
+
+model pam_activity_log {
+  id          Int      @id @default(autoincrement())
+  activity_id Int      @db.TinyInt
+  user_id     Int
+  admin_id    Int
+  created_at  DateTime @db.DateTime(0)
+}
+
+model pam_activities {
+  id             Int      @id @default(autoincrement())
+  // User Information
+  user_id        Int? // Can be null for system activities
+  user_type      String?  @db.VarChar(20) // 'admin', 'customer', 'staff', 'system'
+  user_name      String?  @db.VarChar(100) // Name of the user for quick reference
+  // Activity Details
+  activity_type  String   @db.VarChar(50) // e.g., 'login', 'create', 'update', 'delete', 'view'
+  module         String   @db.VarChar(50) // e.g., 'user', 'product', 'order', 'country'
+  action         String   @db.VarChar(100) // Detailed action description
+  activity_code  String   @db.VarChar(20) // Unique activity code
+  // Resource Information
+  resource_id    Int? // ID of the affected resource (e.g., user_id, product_id)
+  resource_type  String?  @db.VarChar(50) // Type of resource affected
+  resource_name  String?  @db.VarChar(255) // Name/title of the resource
+  // Data Changes
+  old_data       Json? // Old values (before change) - store as JSON
+  new_data       Json? // New values (after change) - store as JSON
+  changed_fields String?  @db.VarChar(500) // Comma-separated list of changed fields
+  // IP & Location
+  ip_address     String?  @db.VarChar(45) // IPv4 or IPv6
+  user_agent     String?  @db.Text // Full user agent string
+  device_type    String?  @db.VarChar(20) // 'desktop', 'mobile', 'tablet'
+  browser        String?  @db.VarChar(50) // Browser name
+  os             String?  @db.VarChar(50) // Operating system
+  // Location Data
+  country        String?  @db.VarChar(100)
+  region         String?  @db.VarChar(100)
+  city           String?  @db.VarChar(100)
+  latitude       Float?
+  longitude      Float?
+  // Request Information
+  request_method String?  @db.VarChar(10) // GET, POST, PUT, DELETE, PATCH
+  endpoint       String?  @db.VarChar(500) // API endpoint/URL
+  request_id     String?  @db.VarChar(100) // Unique request ID for tracing
+  // Status & Severity
+  status         String   @default("success") @db.VarChar(20) // 'success', 'failed', 'warning'
+  status_code    Int? // HTTP status code or custom code
+  severity       String   @default("info") @db.VarChar(20) // 'info', 'low', 'medium', 'high', 'critical'
+  message        String?  @db.Text // Human readable message
+  duration_ms    Int? // Time taken for the action in milliseconds
+  session_id     String?  @db.VarChar(100) // User session ID
+  created_at     DateTime @default(now()) @db.DateTime(0)
+  updated_at     DateTime @updatedAt @db.DateTime(0)
+
+  @@index([user_id])
+  @@index([user_type])
+  @@index([activity_type])
+  @@index([module])
+  @@index([resource_type, resource_id])
+  @@index([status])
+  @@index([severity])
+  @@index([created_at])
+  @@index([ip_address])
+  @@index([user_id, created_at])
+  @@index([module, activity_type])
+  @@index([status, severity])
+  @@map("pam_activities")
+}
+
+model pam_activity_status {
+  id          Int    @id @default(autoincrement())
+  description String @db.VarChar(225)
+}
+
+model pam_category {
+  category_id Int       @id @default(autoincrement())
+  sortname    String    @db.VarChar(3)
+  name        String    @db.VarChar(150)
+  slug        String    @unique @db.VarChar(255)
+  created_at  DateTime? @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
+  status      Int       @default(1) @db.TinyInt
+
+  subcategories pam_sub_category[]
+  photos        pam_photos[]
+  pdfs          pam_pdfs[]
+}
+
+model pam_cities {
+  id        Int          @id @default(autoincrement())
+  name      String       @db.VarChar(30)
+  slug      String       @db.VarChar(255)
+  state_id  Int
+  status    Int          @default(1) @db.TinyInt
+  state     pam_states   @relation(fields: [state_id], references: [id])
+  pamPhotos pam_photos[]
+}
+
+model pam_countries {
+  id        Int          @id @default(autoincrement())
+  sortname  String       @db.VarChar(3)
+  name      String       @db.VarChar(150)
+  slug      String       @db.VarChar(255)
+  phonecode Int
+  status    Int          @default(1) @db.TinyInt
+  states    pam_states[]
+  pamPhotos pam_photos[]
+}
+
+model pam_credit {
+  id         Int      @id @default(autoincrement())
+  firstname  String   @db.VarChar(30)
+  lastname   String   @db.VarChar(30)
+  email      String   @db.VarChar(50)
+  mobile_no  String   @db.VarChar(30)
+  address    String   @db.VarChar(255)
+  is_active  Int      @default(1) @db.TinyInt
+  created_at DateTime @db.DateTime(0)
+  updated_at DateTime @db.DateTime(0)
+}
+
+model pam_faq {
+  faq_id        Int       @id @default(autoincrement())
+  faq_cat       Int       @default(0)
+  faq_title     String    @db.VarChar(255)
+  faq_desc      String    @db.VarChar(255)
+  faq_status    Int       @default(0)
+  display_order Int       @default(0)
+  created_at    DateTime  @db.DateTime(0)
+  updated_at    DateTime? @db.DateTime(0)
+
+  @@index([faq_id], map: "RoleId")
+}
+
+model pam_module {
+  module_id       Int    @id @default(autoincrement())
+  module_name     String @db.VarChar(255)
+  controller_name String @db.VarChar(255)
+  fa_icon         String @db.VarChar(100)
+  operation       String @db.Text
+  sort_order      Int    @db.TinyInt
+}
+
+model pam_module_access {
+  id            Int    @id @default(autoincrement())
+  admin_role_id Int
+  module        String @db.VarChar(255)
+  operation     String @db.VarChar(255)
+
+  @@index([admin_role_id], map: "RoleId")
+}
+
+model pam_photo_tags {
+  photo_tag_id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  tag_id       BigInt
+  photo_id     BigInt
+
+  //photo pam_photos? @relation(fields: [photo_id], references: [photo_id])
+  //tag      tags?       @relation(fields: [tag_id], references: [tag_id])
+  //pamPhotos          pam_photos? @relation(fields: [pam_photosPhoto_id], references: [photo_id])
+  //pam_photosPhoto_id BigInt?
+  photo pam_photos @relation(fields: [photo_id], references: [photo_id])
+  tag   pam_tags   @relation(fields: [tag_id], references: [tag_id])
+
+  @@index([photo_id], map: "IdxPhoto")
+  @@index([tag_id], map: "IdxTag")
+}
+
+model pam_photos {
+  photo_id         BigInt   @id @default(autoincrement())
+  category_id      Int      @default(0)
+  sub_category_id  Int      @default(0)
+  country_id       Int      @default(0)
+  state_id         Int      @default(0)
+  city_id          Int      @default(0)
+  author_id        Int      @default(0)
+  media_type       String?  @db.VarChar(10)
+  photo_title      String   @db.VarChar(255)
+  event_name       String   @db.VarChar(255)
+  description      String   @db.VarChar(300)
+  source_name      String?  @db.VarChar(255)
+  credit           Int
+  other_credit     String?  @db.VarChar(100)
+  max_download     Int?     @default(0)
+  download         Int?     @default(0)
+  is_active        Int      @default(1)
+  is_trash         Int      @default(0)
+  photography_time DateTime @default(now()) @db.Timestamp(0)
+  enter_by         Int
+  entered_on       DateTime @default(now()) @db.Timestamp(0)
+  updated_by       Int
+  updated_on       DateTime @default(now()) @db.DateTime(0)
+  price            Decimal? @default(0.00) @db.Decimal(7, 2)
+  dg_pic_id        Int?
+  photo_tags       String?  @db.VarChar(2000)
+  //cover_file_id    BigInt?  @db.UnsignedBigInt  // ADD THIS COLUMN
+
+  // Relations
+  category     pam_category?     @relation(fields: [category_id], references: [category_id])
+  sub_category pam_sub_category? @relation(fields: [sub_category_id], references: [sub_category_id])
+  country      pam_countries?    @relation(fields: [country_id], references: [id], onDelete: NoAction, map: "fk_pam_photos_country_id")
+  state        pam_states?       @relation(fields: [state_id], references: [id], onDelete: NoAction, map: "fk_pam_photos_state_id")
+  city         pam_cities?       @relation(fields: [city_id], references: [id], onDelete: NoAction, map: "fk_pam_photos_city_id")
+
+  // User relation - FIXED: Added opposite relation field
+  user pam_users? @relation(fields: [author_id], references: [id], onDelete: NoAction, map: "fk_pam_photos_author_id")
+
+  // One-to-many relations
+  files pam_photos_files[]
+  tags  pam_photo_tags[]
+}
+
+model pam_photos_files {
+  file_id             BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  photo_id            BigInt                    @default(0) // CHANGED: Must be BigInt to match pam_photos.photo_id
+  file_ext            String                    @default("jpg") @db.VarChar(20)
+  type                String                    @default("") @db.VarChar(255)
+  dir_path            String                    @db.VarChar(55)
+  file_size           String                    @db.VarChar(55)
+  photo_title         String                    @db.VarChar(100)
+  photo_caption       String                    @db.VarChar(300)
+  photo_copyright     String                    @db.VarChar(100)
+  reference           String                    @db.Text
+  source              String                    @db.VarChar(100)
+  date_created        DateTime                  @db.Date
+  enter_by            String                    @default("") @db.VarChar(255)
+  entered_on          DateTime                  @default(now()) @db.Timestamp(0)
+  updated_by          String                    @default("") @db.VarChar(255)
+  updated_on          DateTime                  @default(now()) @db.DateTime(0)
+  is_trash            pam_photos_files_is_trash @default(N)
+  trashed_by          String                    @default("") @db.VarChar(255)
+  trashed_on          DateTime                  @default(now()) @db.DateTime(0)
+  Width               Int?                      @default(0) @db.SmallInt
+  Height              Int?                      @default(0) @db.SmallInt
+  orientation         String?                   @default("") @db.VarChar(25)
+  raw_name            String                    @db.VarChar(255)
+  Image_Name          String?                   @db.VarChar(255)
+  original_image_name String?                   @db.VarChar(255)
+  isMigrat            Int?                      @default(0) @db.SmallInt
+  migratedFilePath    String?                   @default("") @db.VarChar(50)
+  migratedFileName    String?                   @default("") @db.VarChar(150)
+  is_cover            Boolean                   @default(false) 
+  dominant_color      String?                   @db.VarChar(100)
+  downloads           Int?                      @default(0) @db.SmallInt
+
+  // Relation - FIXED: Photo ID is Int in this table, but BigInt in pam_photos
+  // This is a type mismatch that needs to be fixed in the database
+  photo pam_photos @relation(fields: [photo_id], references: [photo_id], onDelete: Cascade)
+}
+
+model pam_states {
+  id         Int           @id @default(autoincrement())
+  name       String        @db.VarChar(30)
+  slug       String        @db.VarChar(255)
+  country_id Int           @default(1)
+  status     Int           @default(1) @db.TinyInt
+  country    pam_countries @relation(fields: [country_id], references: [id])
+  cities     pam_cities[]
+  pamPhotos  pam_photos[]
+}
+
+model pam_sub_category {
+  sub_category_id Int       @id @default(autoincrement())
+  category_id     Int
+  name            String    @db.VarChar(150)
+  slug            String    @unique @db.VarChar(255)
+  created_at      DateTime? @db.DateTime(0)
+  updated_at      DateTime? @default(now()) @db.DateTime(0)
+  status          Int       @default(1) @db.TinyInt
+
+  // Relations
+  category pam_category @relation(fields: [category_id], references: [category_id], onDelete: Cascade)
+  photos   pam_photos[]
+  pdfs     pam_pdfs[]
+}
+
+model pam_sub_module {
+  id         Int    @id @default(autoincrement())
+  parent     Int
+  name       String @db.VarChar(255)
+  link       String @db.VarChar(255)
+  sort_order Int
+
+  @@index([parent], map: "Parent Module ID")
+}
+
+model pam_tags {
+  tag_id         BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  photo_tag      String           @db.VarChar(100)
+  photo_slug     String           @db.VarChar(100)
+  pam_photo_tags pam_photo_tags[]
+
+  @@unique([photo_slug])
+}
+
+model pam_users {
+  id                  Int      @id @default(autoincrement())
+  username            String   @db.VarChar(50)
+  firstname           String   @db.VarChar(30)
+  lastname            String   @db.VarChar(30)
+  email               String   @db.VarChar(50)
+  mobile_no           String   @db.VarChar(30)
+  password            String   @db.VarChar(255)
+  address             String   @db.VarChar(255)
+  photo               String?  @db.VarChar(255)
+  role                Int      @default(1) @db.TinyInt
+  is_active           Int      @default(1) @db.TinyInt
+  is_verify           Int      @default(0) @db.TinyInt
+  is_admin            Int      @default(0) @db.TinyInt
+  token               String   @db.VarChar(255)
+  password_reset_code String   @db.VarChar(255)
+  last_ip             String   @db.VarChar(30)
+  created_at          DateTime @db.DateTime(0)
+  updated_at          DateTime @db.DateTime(0)
+
+  // Relations
+  pamPhotos pam_photos[]
+  pdfs      pam_pdfs[]
+
+  @@index([email], map: "IdxEmail")
+}
+
+model ci_settings {
+  setting_id    Int       @id @default(autoincrement())
+  setting_key   String    @unique @db.VarChar(100)
+  setting_value String?   @db.Text
+  created_by    Int?
+  updated_by    Int?
+  created_at    DateTime? @default(now()) @db.Timestamp(0)
+  updated_at    DateTime? @updatedAt @db.Timestamp(0)
+  // Relations
+  created_admin ci_admin? @relation("settings_created_by", fields: [created_by], references: [admin_id])
+  updated_admin ci_admin? @relation("settings_updated_by", fields: [updated_by], references: [admin_id])
+}
+
+enum pam_photos_files_is_trash {
+  Y
+  N
+}
+
+model pam_user_favorites {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  asset_id   String   @db.VarChar(50)
+  asset_type String   @db.VarChar(20) @default("photo")
+  created_at DateTime @default(now())
+  
+  @@unique([user_id, asset_id])
+  @@map("pam_user_favorites")
+}
+
+model pam_pdfs {
+  pdf_id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid            String?  @db.VarChar(40)
+  
+  // Basic Information
+  pdf_title       String   @db.VarChar(255)
+  pdf_description String?  @db.VarChar(500)
+  event_name      String?  @db.VarChar(255)
+  
+  // Categorization
+  category_id     Int      @default(0)
+  sub_category_id Int      @default(0)
+  
+  // Author & Credits
+  author_id       Int      @default(0)
+  credit          Int      @default(0)
+  other_credit    String?  @db.VarChar(100)
+  source_name     String?  @db.VarChar(255)
+  
+  // Pricing & Access
+  price           Decimal? @default(0.00) @db.Decimal(7, 2)
+  max_download    Int?     @default(0)
+  
+  // Status Flags
+  is_active       Int      @default(1)
+  is_trash        Int      @default(0)
+  
+  // File Information
+  pdf_file_name   String   @db.VarChar(255)
+  original_file_name String @db.VarChar(255)
+  file_size       String   @db.VarChar(55)
+  dir_path        String   @db.VarChar(255)
+  storage_url     String?  @db.VarChar(500)
+  
+  // Metadata
+  total_pages     Int?     @default(0)
+  page_width      Int?
+  page_height     Int?
+  keywords        String?  @db.VarChar(500)
+  pdf_tags        String?  @db.VarChar(2000)
+  
+  // Stats
+  downloads       Int?     @default(0)
+  
+  // Timestamps
+  photography_time DateTime? @db.Timestamp(0)
+  enter_by        Int
+  entered_on      DateTime @default(now()) @db.Timestamp(0)
+  updated_by      Int
+  updated_on      DateTime @default(now()) @db.DateTime(0)
+
+  // ✅ FIXED: Added missing relations
+  category        pam_category?     @relation(fields: [category_id], references: [category_id])
+  sub_category    pam_sub_category? @relation(fields: [sub_category_id], references: [sub_category_id])
+  user            pam_users?        @relation(fields: [author_id], references: [id])
+  
+  // Relations
+  thumbnails      pam_pdf_thumbnails[]
+  activities      pam_pdf_activities[]
+  
+  @@index([category_id])
+  @@index([author_id])
+  @@index([is_active, is_trash])
+  @@index([entered_on])
+  @@index([uuid])
+  @@fulltext([pdf_title, pdf_description, keywords, pdf_tags])
+  @@map("pam_pdfs")
+}
+
+model pam_pdf_thumbnails {
+  thumbnail_id    BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  pdf_id          BigInt   @db.UnsignedBigInt
+  page_number     Int
+  
+  // Thumbnail Files
+  thumbnail_url   String   @db.VarChar(500)
+  thumbnail_path  String   @db.VarChar(255)
+  
+  // Status
+  is_cover        Int      @default(0)
+  is_active       Int      @default(1)
+  is_trash        String   @default("N") @db.VarChar(1)
+  
+  // Timestamps
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @default(now()) @db.DateTime(0)
+  
+  // Relations
+  pdf             pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
+  
+  @@index([pdf_id])
+  @@index([page_number])
+  @@index([is_active, is_trash])
+  @@map("pam_pdf_thumbnails")
+}
+
+model pam_pdf_activities {
+  activity_id       BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  pdf_id            BigInt   @db.UnsignedBigInt
+  user_id           Int
+  
+  // Activity Details
+  action_type       String   @db.VarChar(50)
+  action_description String  @db.VarChar(255)
+  
+  // Details (JSON)
+  details           Json?
+  
+  // Timestamp
+  activity_time     DateTime @default(now()) @db.Timestamp(0)
+  
+  // Relations
+  pdf               pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
+  
+  @@index([pdf_id])
+  @@index([user_id])
+  @@index([activity_time])
+  @@index([action_type])
+  @@map("pam_pdf_activities")
+}

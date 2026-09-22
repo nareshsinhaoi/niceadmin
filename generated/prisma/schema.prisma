@@ -1,18 +1,8 @@
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "../generated/prisma"
-// }
-
-// generator client {
-//   provider = "prisma-client-js"  // or "prisma-client"
-//   output   = "../node_modules/.prisma/client"
-// }
-
-
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
+
 datasource db {
   provider = "mysql"
 }
@@ -372,7 +362,7 @@ model pam_photos_files {
   isMigrat            Int?                      @default(0) @db.SmallInt
   migratedFilePath    String?                   @default("") @db.VarChar(50)
   migratedFileName    String?                   @default("") @db.VarChar(150)
-  is_cover            Boolean                   @default(false) 
+  is_cover            Boolean                   @default(false)
   dominant_color      String?                   @db.VarChar(100)
   downloads           Int?                      @default(0) @db.SmallInt
 
@@ -475,73 +465,73 @@ model pam_user_favorites {
   id         Int      @id @default(autoincrement())
   user_id    Int
   asset_id   String   @db.VarChar(50)
-  asset_type String   @db.VarChar(20) @default("photo")
+  asset_type String   @default("photo") @db.VarChar(20)
   created_at DateTime @default(now())
-  
+
   @@unique([user_id, asset_id])
   @@map("pam_user_favorites")
 }
 
 model pam_pdfs {
-  pdf_id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  uuid            String?  @db.VarChar(40)
-  
+  pdf_id BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid   String? @db.VarChar(40)
+
   // Basic Information
-  pdf_title       String   @db.VarChar(255)
-  pdf_description String?  @db.VarChar(500)
-  event_name      String?  @db.VarChar(255)
-  
+  pdf_title       String  @db.VarChar(255)
+  pdf_description String? @db.VarChar(500)
+  event_name      String? @db.VarChar(255)
+
   // Categorization
-  category_id     Int      @default(0)
-  sub_category_id Int      @default(0)
-  
+  category_id     Int @default(0)
+  sub_category_id Int @default(0)
+
   // Author & Credits
-  author_id       Int      @default(0)
-  credit          Int      @default(0)
-  other_credit    String?  @db.VarChar(100)
-  source_name     String?  @db.VarChar(255)
-  
+  author_id    Int     @default(0)
+  credit       Int     @default(0)
+  other_credit String? @db.VarChar(100)
+  source_name  String? @db.VarChar(255)
+
   // Pricing & Access
-  price           Decimal? @default(0.00) @db.Decimal(7, 2)
-  max_download    Int?     @default(0)
-  
+  price        Decimal? @default(0.00) @db.Decimal(7, 2)
+  max_download Int?     @default(0)
+
   // Status Flags
-  is_active       Int      @default(1)
-  is_trash        Int      @default(0)
-  
+  is_active Int @default(1)
+  is_trash  Int @default(0)
+
   // File Information
-  pdf_file_name   String   @db.VarChar(255)
-  original_file_name String @db.VarChar(255)
-  file_size       String   @db.VarChar(55)
-  dir_path        String   @db.VarChar(255)
-  storage_url     String?  @db.VarChar(500)
-  
+  pdf_file_name      String  @db.VarChar(255)
+  original_file_name String  @db.VarChar(255)
+  file_size          String  @db.VarChar(55)
+  dir_path           String  @db.VarChar(255)
+  storage_url        String? @db.VarChar(500)
+
   // Metadata
-  total_pages     Int?     @default(0)
-  page_width      Int?
-  page_height     Int?
-  keywords        String?  @db.VarChar(500)
-  pdf_tags        String?  @db.VarChar(2000)
-  
+  total_pages Int?    @default(0)
+  page_width  Int?
+  page_height Int?
+  keywords    String? @db.VarChar(500)
+  pdf_tags    String? @db.VarChar(2000)
+
   // Stats
-  downloads       Int?     @default(0)
-  
+  downloads Int? @default(0)
+
   // Timestamps
   photography_time DateTime? @db.Timestamp(0)
-  enter_by        Int
-  entered_on      DateTime @default(now()) @db.Timestamp(0)
-  updated_by      Int
-  updated_on      DateTime @default(now()) @db.DateTime(0)
+  enter_by         Int
+  entered_on       DateTime  @default(now()) @db.Timestamp(0)
+  updated_by       Int
+  updated_on       DateTime  @default(now()) @db.DateTime(0)
 
   // ✅ FIXED: Added missing relations
-  category        pam_category?     @relation(fields: [category_id], references: [category_id])
-  sub_category    pam_sub_category? @relation(fields: [sub_category_id], references: [sub_category_id])
-  user            pam_users?        @relation(fields: [author_id], references: [id])
-  
+  category     pam_category?     @relation(fields: [category_id], references: [category_id])
+  sub_category pam_sub_category? @relation(fields: [sub_category_id], references: [sub_category_id])
+  user         pam_users?        @relation(fields: [author_id], references: [id])
+
   // Relations
-  thumbnails      pam_pdf_thumbnails[]
-  activities      pam_pdf_activities[]
-  
+  thumbnails pam_pdf_thumbnails[]
+  activities pam_pdf_activities[]
+
   @@index([category_id])
   @@index([author_id])
   @@index([is_active, is_trash])
@@ -552,26 +542,26 @@ model pam_pdfs {
 }
 
 model pam_pdf_thumbnails {
-  thumbnail_id    BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  pdf_id          BigInt   @db.UnsignedBigInt
-  page_number     Int
-  
+  thumbnail_id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  pdf_id       BigInt @db.UnsignedBigInt
+  page_number  Int
+
   // Thumbnail Files
-  thumbnail_url   String   @db.VarChar(500)
-  thumbnail_path  String   @db.VarChar(255)
-  
+  thumbnail_url  String @db.VarChar(500)
+  thumbnail_path String @db.VarChar(255)
+
   // Status
-  is_cover        Int      @default(0)
-  is_active       Int      @default(1)
-  is_trash        String   @default("N") @db.VarChar(1)
-  
+  is_cover  Int    @default(0)
+  is_active Int    @default(1)
+  is_trash  String @default("N") @db.VarChar(1)
+
   // Timestamps
-  created_at      DateTime @default(now()) @db.Timestamp(0)
-  updated_at      DateTime @default(now()) @db.DateTime(0)
-  
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+
   // Relations
-  pdf             pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
-  
+  pdf pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
+
   @@index([pdf_id])
   @@index([page_number])
   @@index([is_active, is_trash])
@@ -579,23 +569,23 @@ model pam_pdf_thumbnails {
 }
 
 model pam_pdf_activities {
-  activity_id       BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  pdf_id            BigInt   @db.UnsignedBigInt
-  user_id           Int
-  
+  activity_id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  pdf_id      BigInt @db.UnsignedBigInt
+  user_id     Int
+
   // Activity Details
-  action_type       String   @db.VarChar(50)
-  action_description String  @db.VarChar(255)
-  
+  action_type        String @db.VarChar(50)
+  action_description String @db.VarChar(255)
+
   // Details (JSON)
-  details           Json?
-  
+  details Json?
+
   // Timestamp
-  activity_time     DateTime @default(now()) @db.Timestamp(0)
-  
+  activity_time DateTime @default(now()) @db.Timestamp(0)
+
   // Relations
-  pdf               pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
-  
+  pdf pam_pdfs @relation(fields: [pdf_id], references: [pdf_id], onDelete: Cascade)
+
   @@index([pdf_id])
   @@index([user_id])
   @@index([activity_time])

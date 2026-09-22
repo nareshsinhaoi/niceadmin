@@ -1,4 +1,5 @@
-const { PrismaClient } = require('./generated/prisma')
+//const { PrismaClient } = require('@/generated/prisma')
+import { PrismaClient } from './generated/prisma'
 const prisma = new PrismaClient()
 
 // A `main` function so that we can use async/await
